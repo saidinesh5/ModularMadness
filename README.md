@@ -6,17 +6,16 @@ Yet another interview question.
 
 build:
 ------
-
-    mkdir build
-    cd build
-    cmake ..
     make
+    ./ModularMadness
 
 Notes:
 ------
 
 The Program comprises of two parts:
+
   1) Engine
+  ----------
   The actual Engine that does all the processing.
   Internally it builds a graph of all the instantiated modules where,
 
@@ -31,11 +30,12 @@ The Program comprises of two parts:
     c) "process <string1> <string2> <string3> ..."
 
   For the engine, everything is a module, including input and output.
- 
+
  2) Modules
+ ----------
   All the modules are derived from the base class Module. Each module must at least implement Module::acceptInput(const string&) and Module::output().
   Each module does one specific task it is designed for. Currently available modules are:
- 
+
      InputModule   -> Outputs the input strings one at a time. hasUnprocessedData() returns true until all the data is consumed.
      OutputModule  -> Outputs the given input to console. If the number of output strings >= number of input strings, it won't accept any more input.
      DelayModule   -> Outputs the previous input string. The first output string is "hello".
