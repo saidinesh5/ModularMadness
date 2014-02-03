@@ -14,7 +14,7 @@ int main()
         getline( cin, input );
         if(!engine.processCommand( input ))
         {
-            cerr<< "Error executing: "<< input << endl;
+            LOGME( "Error executing: "<< input << endl );
         }
     }
     return 0;

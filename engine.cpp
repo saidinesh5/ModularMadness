@@ -1,7 +1,6 @@
 #include <iostream>
 #include <istream>
 #include <iterator>
-#include <algorithm>
 #include <sstream>
 
 #include "engine.h"
@@ -33,7 +32,7 @@ bool Engine::processCommand( const string &command )
 {
     if( command.empty() )
     {
-        cerr << "Cannot process an empty command" << endl;
+        LOGME( "Cannot process an empty command" << endl );
         return false;
     }
 
@@ -123,8 +122,8 @@ bool Engine::removeDependancy( const ModuleId module1, const ModuleId module2 )
     // Removes module2 from the modules that module1 depends on
     if( !( module1 < m_moduleDependencies.size() && module2 < m_moduleDependencies.size() ) )
     {
-        cerr << " Error while trying to add dependency: " << module1 << " ---> " << module2 << endl;
-        cerr << " Number of modules = " << m_moduleDependencies.size() << endl;
+        LOGME( " Error while trying to add dependency: " << module1 << " ---> " << module2 << endl );
+        LOGME( " Number of modules = " << m_moduleDependencies.size() << endl );
         return false;
     }
 
@@ -146,8 +145,8 @@ bool Engine::setDependancy( const ModuleId module1, const ModuleId module2 )
     // Makes module2 the only dependency of module1
     if( !( module1 < m_moduleDependencies.size() && module2 < m_moduleDependencies.size() ) )
     {
-        cerr << " Error while trying to set dependency: " << module1 << " ---> " << module2 << endl;
-        cerr << " Number of modules = " << m_moduleDependencies.size() << endl;
+        LOGME( " Error while trying to set dependency: " << module1 << " ---> " << module2 << endl );
+        LOGME( " Number of modules = " << m_moduleDependencies.size() << endl );
         return false;
     }
 
@@ -179,8 +178,8 @@ bool Engine::addModule( string name, string type )
     // adds a new module of the given type to the list of modules
     if( m_moduleIds.count(name) > 0 )
     {
-        cerr << "Error while trying to add module: " << name << "(" << type << ")" << endl;
-        cerr << "modules[" << name << "] = " << m_moduleIds[name] << endl;
+        LOGME( "Error while trying to add module: " << name << "(" << type << ")" << endl );
+        LOGME( "modules[" << name << "] = " << m_moduleIds[name] << endl );
         return false;
     }
 
@@ -224,7 +223,7 @@ bool Engine::processData( const vector<string>& data )
 {
     if( data.empty() )
     {
-        cerr << "No data to process" << endl;
+        LOGME( "No data to process" << endl );
         return true;
     }
 
@@ -239,7 +238,7 @@ bool Engine::processData( const vector<string>& data )
     {
         // Get the flags ready for recurssion
         m_visited = vector<bool>( m_modules.size(), false );
-        needsAnotherTick = process( OUTPUT_MODULE_ID );
+        needsAnotherTick = tick( OUTPUT_MODULE_ID );
     }
 
     // Clean up after the event loop
@@ -249,7 +248,7 @@ bool Engine::processData( const vector<string>& data )
     return true;
 }
 
-bool Engine::process(ModuleId id)
+bool Engine::tick( ModuleId id )
 {
     bool needsAnotherTick = false;
     auto adjacentNodes = m_moduleDependencies[id];
@@ -264,7 +263,7 @@ bool Engine::process(ModuleId id)
 
             // This module needs another tick if it's dependencies need another nick
             if( m_needsAnotherTick[nextModuleId] )
-                needsAnotherTick = needsAnotherTick || process( nextModuleId );
+                needsAnotherTick = needsAnotherTick || tick( nextModuleId );
 
             // Then processData() data on them, so if they have any unprocessed data from previous step,
             // it shall be processed.

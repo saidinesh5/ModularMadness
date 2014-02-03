@@ -11,6 +11,12 @@
 #define INPUT_MODULE_ID 0
 #define OUTPUT_MODULE_ID 1
 
+#ifdef ENABLE_LOGGING
+#define LOGME(args) cerr << args
+#else
+#define LOGME(args)
+#endif
+
 using namespace std;
 typedef shared_ptr<Module> ModulePtr;
 typedef size_t ModuleId;
@@ -131,12 +137,12 @@ private:
     bool processData( const vector<string>& data );
 
     /**
-     * @brief process
+     * @brief tick
      *        This method implements a Depth First Search, starting from the given module, and searches for modules with unprocessed data.
      * @param id - The module id from where to start the depth first search. By default, we start search from the output module
      * @return false if the event loop has to stop, if any module cannot be processed OR no module has any unprocessed data
      */
-    bool process( ModuleId id = OUTPUT_MODULE_ID );
+    bool tick( ModuleId id = OUTPUT_MODULE_ID );
 };
 
 #endif // ENGINE_H
