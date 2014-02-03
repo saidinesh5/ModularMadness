@@ -56,7 +56,7 @@ bool Engine::processCommand( const string &command )
 }
 
 
-const string Engine::moduleName(ModuleId id)
+const string Engine::moduleName( ModuleId id )
 {
     if( id >= m_moduleIds.size() )
         return "-";
@@ -71,7 +71,7 @@ const string Engine::moduleName(ModuleId id)
 }
 
 
-bool Engine::addDependancy( const unsigned long module1, const unsigned long module2 )
+bool Engine::addDependancy( const ModuleId module1, const ModuleId module2 )
 {
     // Adds module2 to the list of modules that module1 depends on for calculation
     if( !( module1 < m_modules.size() && module2 < m_modules.size() ) )
@@ -87,7 +87,8 @@ bool Engine::addDependancy( const unsigned long module1, const unsigned long mod
     ModuleId start = module2;
     ModuleId end = module1;
 
-    vector< ModuleId > stack { start };
+    vector< ModuleId > stack;
+	stack.push_back( start );
     visited[start] = true;
 
     while( !stack.empty() )
@@ -117,7 +118,7 @@ bool Engine::addDependancy( const unsigned long module1, const unsigned long mod
 }
 
 
-bool Engine::removeDependancy( const unsigned long module1, const unsigned long module2 )
+bool Engine::removeDependancy( const ModuleId module1, const ModuleId module2 )
 {
     // Removes module2 from the modules that module1 depends on
     if( !( module1 < m_moduleDependencies.size() && module2 < m_moduleDependencies.size() ) )
@@ -140,7 +141,7 @@ bool Engine::removeDependancy( const unsigned long module1, const unsigned long 
 }
 
 
-bool Engine::setDependancy( const unsigned long module1, const unsigned long module2 )
+bool Engine::setDependancy( const ModuleId module1, const ModuleId module2 )
 {
     // Makes module2 the only dependency of module1
     if( !( module1 < m_moduleDependencies.size() && module2 < m_moduleDependencies.size() ) )
@@ -155,7 +156,7 @@ bool Engine::setDependancy( const unsigned long module1, const unsigned long mod
 }
 
 
-const string Engine::collectInputs(ModuleId id)
+const string Engine::collectInputs( ModuleId id )
 {
     string result = "";
 
@@ -185,8 +186,9 @@ bool Engine::addModule( string name, string type )
 
     if( type == "delay" || type == "echo" || type == "noop" || type == "reverse" )
     {
-        int moduleId = m_modules.size();
+        ModuleId moduleId = m_modules.size();
         m_moduleIds[name] = moduleId;
+
         if(type == "delay")
             m_modules.push_back( ModulePtr( new DelayModule() ) );
         if(type == "echo" )
@@ -259,15 +261,21 @@ bool Engine::process(ModuleId id)
         if( !m_visited[nextModuleId] )
         {
             m_visited[nextModuleId] = true;
+
+            // This module needs another tick if it's dependencies need another nick
             if( m_needsAnotherTick[nextModuleId] )
                 needsAnotherTick = needsAnotherTick || process( nextModuleId );
 
-            // Then processData() data on them, so if they have any unprocessed data from previous step, it shall be processed.
+            // Then processData() data on them, so if they have any unprocessed data from previous step,
+            // it shall be processed.
             if( m_modules[nextModuleId]->hasUnprocessedData() )
             {
                 if( !m_modules[nextModuleId]->processData() )
                     return false;
             }
+
+            // This module needs another tick also if it's dependancies have unprocessed data
+            needsAnotherTick = needsAnotherTick || m_modules[nextModuleId]->hasUnprocessedData();
         }
     }
 
@@ -283,6 +291,5 @@ bool Engine::process(ModuleId id)
     // A module needs another "process()", only if any of the modules that it depends on needs another process()
     m_needsAnotherTick[id] = needsAnotherTick;
 
-    // If a module has unprocessed data, it's dependents need another process()
-    return m_needsAnotherTick[id] || m_modules[id]->hasUnprocessedData();
+    return m_needsAnotherTick[id];
 }

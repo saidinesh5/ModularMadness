@@ -13,7 +13,7 @@
 
 using namespace std;
 typedef shared_ptr<Module> ModulePtr;
-typedef unsigned long ModuleId;
+typedef size_t ModuleId;
 
 /**
  * @brief The Engine class
@@ -68,7 +68,7 @@ private:
      * @param module2
      * @return false if the addition failed - like when a cycle is detected
      */
-    bool addDependancy( const unsigned long module1, const unsigned long module2 );
+    bool addDependancy( const ModuleId module1, const ModuleId module2 );
 
     /**
      * @brief removeDependancy - removes module2 as a dependancy to compute module1
@@ -76,7 +76,7 @@ private:
      * @param module2
      * @return false if there is nothing to remove
      */
-    bool removeDependancy( const unsigned long module1, const unsigned long module2 );
+    bool removeDependancy(const ModuleId module1, const ModuleId module2 );
 
     /**
      * @brief setDependancy - reset dependancies of module1 and addDependancy(module1, module2)
@@ -84,7 +84,7 @@ private:
      * @param module2
      * @return false if something goes wrong
      */
-    bool setDependancy( const unsigned long module1, const unsigned long module2 );
+    bool setDependancy( const ModuleId module1, const ModuleId module2 );
 
     /**
      * @brief collectInputs

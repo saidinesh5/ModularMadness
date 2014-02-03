@@ -32,7 +32,7 @@ using namespace std;
  *
  * 6) finalize();
  *
- * 7) optionally reset
+ * 7) (optionally) reset();
  *
  */
 
