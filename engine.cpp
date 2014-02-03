@@ -16,8 +16,7 @@
 
 using namespace std;
 
-Engine::Engine():
-    m_rebuildModuleTraversalPath(true)
+Engine::Engine()
 {
     // Modules 0 and 1 are the input and output modules. #TheClassicUnixWay :D
     m_moduleIds["input"] = m_modules.size();
@@ -28,6 +27,7 @@ Engine::Engine():
     m_modules.push_back( ModulePtr( new OutputModule() ) );
     m_moduleDependencies.push_back( vector<ModuleId>() );
 }
+
 
 bool Engine::processCommand( const string &command )
 {
@@ -154,6 +154,7 @@ bool Engine::setDependancy( const unsigned long module1, const unsigned long mod
     return addDependancy(module1, module2);
 }
 
+
 const string Engine::collectInputs(ModuleId id)
 {
     string result = "";
@@ -202,7 +203,6 @@ bool Engine::addModule( string name, string type )
 
         // Set the current module as the output module
         setDependancy( OUTPUT_MODULE_ID, moduleId );
-        m_rebuildModuleTraversalPath = true;
         return true;
     }
 
@@ -213,10 +213,7 @@ bool Engine::connectModules( string module1, string module2 )
 {
     // Connect modules only if they have been defined in the first place
     if( m_moduleIds.count( module1 ) > 0 && m_moduleIds.count( module2 ) > 0 )
-    {
-        m_rebuildModuleTraversalPath = true;
         return addDependancy( m_moduleIds[module2], m_moduleIds[module1] );
-    }
 
     return false;
 }
@@ -232,103 +229,60 @@ bool Engine::processData( const vector<string>& data )
     m_modules[INPUT_MODULE_ID]->initialize( data );
     m_modules[OUTPUT_MODULE_ID]->initialize( data );
 
-    if( m_rebuildModuleTraversalPath )
+    // Assume that all modules have something to say
+    m_needsAnotherTick = vector<bool>( m_modules.size(), true );
+
+    bool needsAnotherTick = true;
+    while( needsAnotherTick )
     {
-        rebuildModuleTraversalPath( OUTPUT_MODULE_ID );
-        m_rebuildModuleTraversalPath = false;
-        if( m_moduleTraversalPath.size() <= 1 )
-        {
-            cerr << "Nothing to do. Add a few modules and then call me back";
-            return true;
-        }
-    }
-
-    // The input module always has data to process
-    long firstUnprocessedNode = m_moduleTraversalPath.front();
-    const vector<ModuleId> &path = m_moduleTraversalPath;
-    bool processingErrors = false;
-
-    while( firstUnprocessedNode >= 0 && !processingErrors )
-    {
-        for( unsigned long i = firstUnprocessedNode; i < path.size(); i++ )
-        {
-            ModuleId moduleId = path[i];
-
-            //Process the first unprocessed node
-            if( m_modules[moduleId]->hasUnprocessedData() )
-                m_modules[moduleId]->processData();
-
-            ModuleId nextModuleId = path[i + 1];
-            if(nextModuleId >= m_modules.size())
-                break;
-
-            // And make it's dependent collect the data
-            if( m_moduleDependencies[nextModuleId].size() > 0)
-            {
-                string nextInput = collectInputs(nextModuleId);
-                if(!m_modules[nextModuleId]->acceptInput(nextInput))
-                {
-                    cerr << moduleName(nextModuleId) << " module did not accept input: "<< nextInput << endl;
-                    processingErrors = true;
-                    break;
-                }
-            }
-        }
-
-        // Find out which node next to process
-        firstUnprocessedNode = -1;
-        for ( unsigned long i = 0; i < path.size(); i++ )
-        {
-            ModuleId moduleId = path[i];
-            if( m_modules[moduleId]->hasUnprocessedData() )
-            {
-                firstUnprocessedNode = i;
-                break;
-            }
-        }
+        // Get the flags ready for recurssion
+        m_visited = vector<bool>( m_modules.size(), false );
+        needsAnotherTick = process( OUTPUT_MODULE_ID );
     }
 
     // Clean up after the event loop
-    for(auto moduleId : m_moduleTraversalPath)
-        m_modules[moduleId]->finalize();
+    for(auto module : m_modules)
+        module->finalize();
 
     return true;
 }
 
-bool Engine::rebuildModuleTraversalPath( ModuleId start )
+bool Engine::process(ModuleId id)
 {
-    m_moduleTraversalPath.clear();
-    vector<bool> visited( m_modules.size(), false );
+    bool needsAnotherTick = false;
+    auto adjacentNodes = m_moduleDependencies[id];
 
-    vector< ModuleId > stack { start };
-    visited[start] = true;
-
-    while( !stack.empty() )
+    for( auto nextModuleId : adjacentNodes )
     {
-        auto currentModuleId = stack.back();
-        auto adjacentNodes = m_moduleDependencies[currentModuleId];
-
-        m_moduleTraversalPath.push_back( currentModuleId );
-        stack.pop_back();
-
-        for( auto nextModuleId : adjacentNodes )
+        // First process all it's dependencies, if they need processing.
+        // That way the data flows from their dependents to them.
+        if( !m_visited[nextModuleId] )
         {
-            if( !visited[nextModuleId] )
+            m_visited[nextModuleId] = true;
+            if( m_needsAnotherTick[nextModuleId] )
+                needsAnotherTick = needsAnotherTick || process( nextModuleId );
+
+            // Then processData() data on them, so if they have any unprocessed data from previous step, it shall be processed.
+            if( m_modules[nextModuleId]->hasUnprocessedData() )
             {
-                visited[nextModuleId] = true;
-                stack.push_back( nextModuleId );
+                if( !m_modules[nextModuleId]->processData() )
+                    return false;
             }
         }
     }
 
-    reverse( m_moduleTraversalPath.begin(), m_moduleTraversalPath.end() );
+    if( !m_moduleDependencies[id].empty() )
+    {
+        const string input = collectInputs( id );
+        if( !m_modules[id]->acceptInput( input ) )
+        {
+            return false;
+        }
+    }
 
-//    cout << "Rebuilt traversal path: " << endl;
-//    for( auto moduleId: m_moduleTraversalPath )
-//    {
-//        cout << moduleName(moduleId) << ",";
-//    }
-//    cout << endl;
+    // A module needs another "process()", only if any of the modules that it depends on needs another process()
+    m_needsAnotherTick[id] = needsAnotherTick;
 
-    return true;
+    // If a module has unprocessed data, it's dependents need another process()
+    return m_needsAnotherTick[id] || m_modules[id]->hasUnprocessedData();
 }

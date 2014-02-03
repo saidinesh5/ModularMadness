@@ -35,10 +35,8 @@ class Engine
     vector< ModulePtr > m_modules;
     vector< vector<ModuleId> > m_moduleDependencies;
 
-    vector< ModuleId > m_moduleTraversalPath;
-
-    // Flag used to indicate that the graph has changed, and the traversal path needs to be recomputed
-    bool m_rebuildModuleTraversalPath;
+    vector<bool> m_visited;
+    vector<bool> m_needsAnotherTick;
 
 public:
     Engine();
@@ -133,16 +131,12 @@ private:
     bool processData( const vector<string>& data );
 
     /**
-     * @brief rebuildModuleTraversalPath
-     *        Topologically sorts the graph of modules, starting at the given module
-     *        and populates the m_moduleTraversalOrder
-     * @param start
-     *        starting point for the graph traversal. If no point is specified,
-     *        we start at the output module.
-     * @return true if the sorting succeeds
+     * @brief process
+     *        This method implements a Depth First Search, starting from the given module, and searches for modules with unprocessed data.
+     * @param id - The module id from where to start the depth first search. By default, we start search from the output module
+     * @return false if the event loop has to stop, if any module cannot be processed OR no module has any unprocessed data
      */
-    bool rebuildModuleTraversalPath( ModuleId start = OUTPUT_MODULE_ID );
-
+    bool process( ModuleId id = OUTPUT_MODULE_ID );
 };
 
 #endif // ENGINE_H
