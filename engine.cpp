@@ -108,16 +108,19 @@ bool Engine::addDependancy( const ModuleId module1, const ModuleId module2 )
     if( !( module1 < m_modules.size() && module2 < m_modules.size() ) )
         return false;
 
-    // Check if the module already exists as a dependency
-    for( auto d : m_moduleDependencies[module1] )
-        if( d == module2 )
-            return false;
-
     // Check if the module2 is reachable from module1 to prevent formation of cycles.
     if( isReachable( module2, module1 ) )
         return false;
 
-    m_moduleDependencies[module1].push_back( module2 );
+    // Insert it in the appropriate position,
+    // so that the modules are processed in the order they are defined.
+    auto currentPosition = m_moduleDependencies[module1].begin();
+    auto finalPosition = m_moduleDependencies[module1].end();
+
+    while( currentPosition != finalPosition && module2 > *(currentPosition) )
+        currentPosition++;
+
+    m_moduleDependencies[module1].insert(currentPosition, module2);
     return true;
 }
 
