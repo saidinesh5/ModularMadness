@@ -5,12 +5,6 @@
 
 #include "commandlistener.h"
 
-
-CommandListener::CommandListener()
-{
-
-}
-
 bool CommandListener::processCommand( const string &command )
 {
     if( command.empty() )

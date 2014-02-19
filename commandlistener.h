@@ -4,13 +4,16 @@
 #include <string>
 #include "engine.h"
 
+/**
+ * @brief The CommandListener class
+ *        This class processes the input commands one line at a time via. processCommand()
+ *        and executes them using an object of the Engine class, if it is a valid command.
+ */
 class CommandListener
 {
     Engine m_engine;
 
 public:
-    CommandListener();
-
     /**
      * @brief processCommand
      *        The only public method of the class. Accepts a command and does the internal processing
