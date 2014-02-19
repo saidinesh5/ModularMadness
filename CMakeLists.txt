@@ -12,4 +12,14 @@ else()
         message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
-add_executable( ModularMadness main.cpp module.cpp engine.cpp inputmodule.cpp outputmodule.cpp delaymodule.cpp echomodule.cpp noopmodule.cpp reversemodule.cpp commandlistener.cpp)
+add_executable( ModularMadness
+                main.cpp
+                commandparser.cpp
+                module.cpp
+                engine.cpp
+                modules/inputmodule.cpp
+                modules/outputmodule.cpp
+                modules/delaymodule.cpp
+                modules/echomodule.cpp
+                modules/noopmodule.cpp
+                modules/reversemodule.cpp )

@@ -5,25 +5,25 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    module.cpp \
     engine.cpp \
-    echomodule.cpp \
-    reversemodule.cpp \
-    noopmodule.cpp \
-    delaymodule.cpp \
-    inputmodule.cpp \
-    outputmodule.cpp \
-    commandlistener.cpp
+    commandparser.cpp \
+    module.cpp \
+    modules/echomodule.cpp \
+    modules/reversemodule.cpp \
+    modules/noopmodule.cpp \
+    modules/delaymodule.cpp \
+    modules/inputmodule.cpp \
+    modules/outputmodule.cpp
 
 HEADERS += \
-    module.h \
+    commandparser.h \
     engine.h \
-    echomodule.h \
-    reversemodule.h \
-    noopmodule.h \
-    delaymodule.h \
-    inputmodule.h \
-    outputmodule.h \
-    commandlistener.h
+    module.h \
+    modules/echomodule.h \
+    modules/reversemodule.h \
+    modules/noopmodule.h \
+    modules/delaymodule.h \
+    modules/inputmodule.h \
+    modules/outputmodule.h
 
 OTHER_FILES += README.md

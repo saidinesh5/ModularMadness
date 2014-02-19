@@ -6,3 +6,6 @@ install_manifest.txt
 .depend
 *.o
 ModularMadness
+doxygen/html
+doxygen/latex
+build/

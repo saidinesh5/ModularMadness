@@ -3,9 +3,9 @@
 #include <iterator>
 #include <sstream>
 
-#include "commandlistener.h"
+#include "commandparser.h"
 
-bool CommandListener::processCommand( const string &command )
+bool CommandParser::parse( const string &command )
 {
     if( command.empty() )
     {

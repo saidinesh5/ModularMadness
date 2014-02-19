@@ -1,23 +1,24 @@
-#ifndef COMMANDLISTENER_H
-#define COMMANDLISTENER_H
+#ifndef COMMANDPARSER_H
+#define COMMANDPARSER_H
 
 #include <string>
 #include "engine.h"
 
 /**
- * @brief The CommandListener class
+ * @brief The CommandParser class
  *
  *        This class processes the input commands one line at a time via. processCommand()
  *        and executes them using an object of the Engine class, if it is a valid command.
  */
-class CommandListener
+class CommandParser
 {
     Engine m_engine;
 
 public:
     /**
-     * @brief processCommand
-     *        The only public method of the class. Accepts a command and does the internal processing
+     * @brief parse
+     *        The only public method of the class.
+     *        Accepts a command and calls the appropriate method on the engine for processing.
      *
      * @param command - The command string to be processed. Currently Accepted commands are:
      *        1) "module <name> <type>"
@@ -26,7 +27,7 @@ public:
      *
      * @return true, if the processing is successful.
      */
-     bool processCommand( const string& command );
+     bool parse( const string& command );
 };
 
-#endif // COMMANDLISTENER_H
+#endif // COMMANDPARSER_H

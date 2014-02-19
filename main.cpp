@@ -1,18 +1,18 @@
 #include <iostream>
 
-#include "commandlistener.h"
+#include "commandparser.h"
 
 using namespace std;
 
 int main()
 {
-    CommandListener commandListener;
+    CommandParser commandParser;
     string input;
 
     while ( !cin.eof() )
     {
         getline( cin, input );
-        if(!commandListener.processCommand( input ))
+        if(!commandParser.parse( input ))
         {
             LOGME( "Error executing: "<< input << endl );
         }

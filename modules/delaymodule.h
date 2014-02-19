@@ -2,7 +2,7 @@
 #define DELAYMODULE_H
 
 #include <queue>
-#include "module.h"
+#include "../module.h"
 
 class DelayModule : public Module
 {

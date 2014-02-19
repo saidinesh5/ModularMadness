@@ -1,7 +1,7 @@
 #ifndef REVERSEMODULE_H
 #define REVERSEMODULE_H
 
-#include "module.h"
+#include "../module.h"
 
 class ReverseModule : public Module
 {

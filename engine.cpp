@@ -1,12 +1,12 @@
 #include "engine.h"
 
-#include "inputmodule.h"
-#include "outputmodule.h"
+#include "modules/inputmodule.h"
+#include "modules/outputmodule.h"
 
-#include "delaymodule.h"
-#include "echomodule.h"
-#include "noopmodule.h"
-#include "reversemodule.h"
+#include "modules/delaymodule.h"
+#include "modules/echomodule.h"
+#include "modules/noopmodule.h"
+#include "modules/reversemodule.h"
 
 using namespace std;
 

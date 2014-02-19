@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "module.h"
+#include "../module.h"
 
 class InputModule : public Module
 {

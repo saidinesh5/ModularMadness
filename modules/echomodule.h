@@ -1,7 +1,7 @@
 #ifndef ECHOMODULE_H
 #define ECHOMODULE_H
 
-#include "module.h"
+#include "../module.h"
 
 class EchoModule : public Module
 {

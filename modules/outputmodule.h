@@ -1,7 +1,7 @@
 #ifndef OUTPUTMODULE_H
 #define OUTPUTMODULE_H
 
-#include "module.h"
+#include "../module.h"
 
 class OutputModule : public Module
 {

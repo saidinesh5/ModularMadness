@@ -1,7 +1,7 @@
 #ifndef NOOPMODULE_H
 #define NOOPMODULE_H
 
-#include "module.h"
+#include "../module.h"
 
 class NoopModule : public Module
 {
