@@ -6,6 +6,7 @@
 
 /**
  * @brief The CommandListener class
+ *
  *        This class processes the input commands one line at a time via. processCommand()
  *        and executes them using an object of the Engine class, if it is a valid command.
  */
