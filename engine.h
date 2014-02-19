@@ -69,6 +69,15 @@ private:
     const string moduleName( ModuleId id );
 
     /**
+     * @brief isReachable
+     *        Implements a Depth first search starting from source to destination
+     * @param source Module to start the DFS from
+     * @param destination Module to search for
+     * @return true if there exists a path from source to destination
+     */
+    bool isReachable( ModuleId source, ModuleId destination );
+
+    /**
      * @brief addDependancy - adds module2 as a dependancy to compute module1
      * @param module1
      * @param module2
@@ -82,7 +91,7 @@ private:
      * @param module2
      * @return false if there is nothing to remove
      */
-    bool removeDependancy(const ModuleId module1, const ModuleId module2 );
+    bool removeDependancy( const ModuleId module1, const ModuleId module2 );
 
     /**
      * @brief setDependancy - reset dependancies of module1 and addDependancy(module1, module2)

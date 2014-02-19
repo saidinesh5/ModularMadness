@@ -69,34 +69,22 @@ const string Engine::moduleName( ModuleId id )
     return "-";
 }
 
-
-bool Engine::addDependancy( const ModuleId module1, const ModuleId module2 )
+bool Engine::isReachable( ModuleId source, ModuleId destination )
 {
-    // Adds module2 to the list of modules that module1 depends on for calculation
-    if( !( module1 < m_modules.size() && module2 < m_modules.size() ) )
-        return false;
-
-    // Check if the module already exists as a dependency
-    for( auto d : m_moduleDependencies[module1] )
-        if( d == module2 )
-            return false;
-
-    // Check if the module2 is reachable from module1
-    vector<bool> visited( m_modules.size(), false );
-    ModuleId start = module2;
-    ModuleId end = module1;
+    //Implements a simple depth first search starting from source
+    vector< bool > visited( m_modules.size(), false );
+    visited[source] = true;
 
     vector< ModuleId > stack;
-	stack.push_back( start );
-    visited[start] = true;
+    stack.push_back( source );
 
     while( !stack.empty() )
     {
         auto currentModuleId = stack.back();
         auto adjacentNodes = m_moduleDependencies[currentModuleId];
 
-        if( currentModuleId == end )
-            return false;
+        if( currentModuleId == destination )
+            return true;
 
         stack.pop_back();
 
@@ -111,6 +99,23 @@ bool Engine::addDependancy( const ModuleId module1, const ModuleId module2 )
         }
     }
 
+    return false;
+}
+
+bool Engine::addDependancy( const ModuleId module1, const ModuleId module2 )
+{
+    // Adds module2 to the list of modules that module1 depends on for calculation
+    if( !( module1 < m_modules.size() && module2 < m_modules.size() ) )
+        return false;
+
+    // Check if the module already exists as a dependency
+    for( auto d : m_moduleDependencies[module1] )
+        if( d == module2 )
+            return false;
+
+    // Check if the module2 is reachable from module1 to prevent formation of cycles.
+    if( isReachable( module2, module1 ) )
+        return false;
 
     m_moduleDependencies[module1].push_back( module2 );
     return true;
@@ -210,6 +215,7 @@ bool Engine::addModule( string name, string type )
     return false;
 }
 
+
 bool Engine::connectModules( string module1, string module2 )
 {
     // Connect modules only if they have been defined in the first place
@@ -287,7 +293,7 @@ bool Engine::tick( ModuleId id )
         }
     }
 
-    // A module needs another "process()", only if any of the modules that it depends on needs another process()
+    // A module needs another "tick()", only if any of the modules that it depends on needs another processData()
     m_needsAnotherTick[id] = needsAnotherTick;
 
     return m_needsAnotherTick[id];
