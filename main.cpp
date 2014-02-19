@@ -1,18 +1,18 @@
 #include <iostream>
 
-#include "engine.h"
+#include "commandlistener.h"
 
 using namespace std;
 
 int main()
 {
-    Engine engine;
+    CommandListener commandListener;
     string input;
 
     while ( !cin.eof() )
     {
         getline( cin, input );
-        if(!engine.processCommand( input ))
+        if(!commandListener.processCommand( input ))
         {
             LOGME( "Error executing: "<< input << endl );
         }

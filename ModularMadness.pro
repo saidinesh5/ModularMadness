@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     noopmodule.cpp \
     delaymodule.cpp \
     inputmodule.cpp \
-    outputmodule.cpp
+    outputmodule.cpp \
+    commandlistener.cpp
 
 HEADERS += \
     module.h \
@@ -22,5 +23,7 @@ HEADERS += \
     noopmodule.h \
     delaymodule.h \
     inputmodule.h \
-    outputmodule.h
+    outputmodule.h \
+    commandlistener.h
 
+OTHER_FILES += README.md

@@ -54,20 +54,44 @@ public:
     Engine();
 
     /**
-     * @brief processCommand
-     *        The only public method of the class. Accepts a command and does the internal processing
-     *
-     * @param command - The command string to be processed. Currently Accepted commands are:
-     *        1) "module <name> <type>"
-     *        2) "connect <module1> <module2>"
-     *        3) "process <string1> <string2> <string3> ..."
-     *
-     * @return true, if the processing is successful.
+     * @brief addModule
+     *        Creates and adds a module to the internal list of modules
+     * @param name - name of the module to create
+     * @param type - type of the module to create: ( delay, echo, noop, reverse )
+     * @return true if module creation is successful
      */
-    bool processCommand( const string& command );
+    bool addModule( string name, string type );
+
+    /**
+     * @brief connectModules
+     *        Adds the module1 as a dependancy of module2.
+     *        FIXME: The connection won't be added if the connection creates a cycle in the graph.
+     *
+     * @param module1
+     * @param module2
+     * @return true - if connection is successful.
+     */
+    bool connectModules( string module1, string module2 );
+
+    /**
+     * @brief processData
+     *        The magic method of the engine that does all of the processing.
+     *        It initializes the input and output modules with the needed data and starts
+     *        The event loop, which runs until:
+     *        1) no module has any data to be processed anymore
+     *        2) any module results in error while during a processing step.
+     *        (for eg. When the Output module raises an error at acceptInput,
+     *         if the outputData > 16*inputData , the engine stops execution)
+     *
+     * @param data - an array of strings to be processed by the modules.
+     *        This will directly be fed into the input and output modules
+     *
+     * @return true, if processing is successful
+     */
+    bool processData( const vector<string>& data );
+
 
 private:
-
     /**
      * @brief moduleName
      * @param id
@@ -115,42 +139,6 @@ private:
      */
     const string collectInputs( ModuleId id );
 
-    /**
-     * @brief addModule
-     *        Creates and adds a module to the internal list of modules
-     * @param name - name of the module to create
-     * @param type - type of the module to create: ( delay, echo, noop, reverse )
-     * @return true if module creation is successful
-     */
-    bool addModule( string name, string type );
-
-    /**
-     * @brief connectModules
-     *        Adds the module1 as a dependancy of module2.
-     *        FIXME: The connection won't be added if the connection creates a cycle in the graph.
-     *
-     * @param module1
-     * @param module2
-     * @return true - if connection is successful.
-     */
-    bool connectModules( string module1, string module2 );
-
-    /**
-     * @brief processData
-     *        The magic method of the engine that does all of the processing.
-     *        It initializes the input and output modules with the needed data and starts
-     *        The event loop, which runs until:
-     *        1) no module has any data to be processed anymore
-     *        2) any module results in error while during a processing step.
-     *        (for eg. When the Output module raises an error at acceptInput,
-     *         if the outputData > 16*inputData , the engine stops execution)
-     *
-     * @param data - an array of strings to be processed by the modules.
-     *        This will directly be fed into the input and output modules
-     *
-     * @return true, if processing is successful
-     */
-    bool processData( const vector<string>& data );
 
     /**
      * @brief tick
