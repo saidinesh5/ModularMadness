@@ -14,12 +14,13 @@ Notes:
 
 The Program comprises of three parts:
 
-  1) CommandListener
+  1) CommandParser
   -------------------
+  
   This is the command parser class which parses the input one line at a time
   And executes it using an instance of the Engine class.
 
-  The CommandListener currently supports the following commands:
+  The CommandParser currently supports the following commands:
 
     a) "module <name> <type>"
 
@@ -29,6 +30,7 @@ The Program comprises of three parts:
 
   2) Engine
   ----------
+  
   The actual Engine that does all the processing.
   Internally it builds a graph of all the instantiated modules where,
 
@@ -52,8 +54,11 @@ The Program comprises of three parts:
 
  3) Modules
  ----------
-  All the modules are derived from the base class Module. Each module must at least implement Module::acceptInput(const string&) and Module::output().
-  Each module does one specific task it is designed for. Currently available modules are:
+  
+  All the modules are derived from the base class Module.
+  Each module does one specific task it is designed for.
+  Each module must at least implement Module::acceptInput(const string&) and Module::output().
+  Currently available modules are:
 
      InputModule   -> Outputs the input strings one at a time. hasUnprocessedData() returns true until all the data is consumed.
      OutputModule  -> Outputs the given input to console. If the number of output strings >= number of input strings, it won't accept any more input.
