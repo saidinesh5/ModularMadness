@@ -75,6 +75,11 @@ bool Engine::addDependancy( const ModuleId module1, const ModuleId module2 )
     if( !( module1 < m_modules.size() && module2 < m_modules.size() ) )
         return false;
 
+    // Check if the module already exists as a dependency
+    for( auto d : m_moduleDependencies[module1] )
+        if( d == module2 )
+            return false;
+
     // Check if the module2 is reachable from module1 to prevent formation of cycles.
     if( isReachable( module2, module1 ) )
         return false;
