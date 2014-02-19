@@ -34,6 +34,12 @@ class Engine
     // We use integer ids to happily speed up the computations done internally
     map< string, ModuleId > m_moduleIds;
 
+    enum IOModules
+    {
+        InputModuleId,
+        OutputModuleId
+    };
+
     // Internal list of module instances: can now be accessed as m_modules[moduleId]
     vector< ModulePtr > m_modules;
     vector< vector<ModuleId> > m_moduleDependencies;
@@ -42,6 +48,9 @@ class Engine
     vector<bool> m_needsAnotherTick;
 
 public:
+    /**
+     * @brief Engine - The Constructor of the class.
+     */
     Engine();
 
     /**
@@ -58,12 +67,6 @@ public:
     bool processCommand( const string& command );
 
 private:
-
-    enum IOModules
-    {
-        InputModuleId,
-        OutputModuleId
-    };
 
     /**
      * @brief moduleName
