@@ -205,10 +205,10 @@ bool Engine::addModule( string name, string type )
         m_moduleDependencies.push_back( vector<ModuleId>() );
         // If this is the first module, make it get the input from the input module
         if( m_modules.size() == 3 )
-            setDependancy( moduleId, INPUT_MODULE_ID );
+            setDependancy( moduleId, InputModuleId );
 
         // Set the current module as the output module
-        setDependancy( OUTPUT_MODULE_ID, moduleId );
+        setDependancy( OutputModuleId, moduleId );
         return true;
     }
 
@@ -233,8 +233,8 @@ bool Engine::processData( const vector<string>& data )
         return true;
     }
 
-    m_modules[INPUT_MODULE_ID]->initialize( data );
-    m_modules[OUTPUT_MODULE_ID]->initialize( data );
+    m_modules[InputModuleId]->initialize( data );
+    m_modules[OutputModuleId]->initialize( data );
 
     // Assume that all modules have something to say
     m_needsAnotherTick = vector<bool>( m_modules.size(), true );
@@ -244,7 +244,7 @@ bool Engine::processData( const vector<string>& data )
     {
         // Get the flags ready for recurssion
         m_visited = vector<bool>( m_modules.size(), false );
-        needsAnotherTick = tick( OUTPUT_MODULE_ID );
+        needsAnotherTick = tick( OutputModuleId );
     }
 
     // Clean up after the event loop

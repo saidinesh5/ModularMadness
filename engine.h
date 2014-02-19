@@ -8,9 +8,6 @@
 
 #include "module.h"
 
-#define INPUT_MODULE_ID 0
-#define OUTPUT_MODULE_ID 1
-
 #ifdef ENABLE_LOGGING
 #define LOGME(args) cerr << args
 #else
@@ -61,6 +58,13 @@ public:
     bool processCommand( const string& command );
 
 private:
+
+    enum IOModules
+    {
+        InputModuleId,
+        OutputModuleId
+    };
+
     /**
      * @brief moduleName
      * @param id
@@ -151,7 +155,7 @@ private:
      * @param id - The module id from where to start the depth first search. By default, we start search from the output module
      * @return false if the event loop has to stop, if any module cannot be processed OR no module has any unprocessed data
      */
-    bool tick( ModuleId id = OUTPUT_MODULE_ID );
+    bool tick( ModuleId id = OutputModuleId );
 };
 
 #endif // ENGINE_H
